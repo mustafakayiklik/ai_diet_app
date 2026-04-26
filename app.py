@@ -1,7 +1,6 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib
-matplotlib.rcParams['font.family'] = 'DejaVu Sans'
 import pandas as pd
 from config import APP_TITLE, APP_ICON
 from services import (
@@ -26,14 +25,14 @@ with st.sidebar:
     frequency = st.slider("Haftada kaç gün antrenman yapıyorsun?", 1, 7, 3)
     experience = st.selectbox("Deneyim seviyesi", [1, 2, 3],
                                format_func=lambda x: {1: "Başlangıç", 2: "Orta", 3: "İleri"}[x])
-    session_hours = st.slider("Antrenman süresi (saat)", 0.5, 3.0, 1.0, step=0.5)
+    session_hours = st.selectbox("Antrenman süresi (saat)", [1, 2, 3], format_func=lambda x: f"{x} saat")
     st.divider()
-    st.header("⚙️ Tercihler")
+    st.header("Tercihler")
     equipment = st.selectbox("Antrenman ortamı", ["Spor salonu", "Ev (ekipmansız)", "Ev (ekipmanlı)", "Açık alan"])
     restrictions = st.text_area("Besin kısıtlamaları / alerjiler",
                                  placeholder="Örnek: gluten yiyemiyorum, muz alerjim var...",
                                  height=80)
-    submitted = st.button("🚀 Program Oluştur", use_container_width=True)
+    submitted = st.button("Program Oluştur", use_container_width=True)
 
 if submitted:
     gender_tr = "Erkek" if gender == "Male" else "Kadın"
@@ -97,9 +96,9 @@ if st.session_state.get("program_ready"):
 
     st.divider()
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4,  = st.tabs([
         "🥗 AI Diyet Planı", "🏋️ AI Egzersiz Planı",
-        "🍎 Besin Veritabanı", "📊 Grafikler", "💬 AI Asistan"
+         "📊 Grafikler", "💬 AI Asistan"
     ])
 
     with tab1:
@@ -113,15 +112,8 @@ if st.session_state.get("program_ready"):
         st.info(f"✅ Antrenman ortamı: {profile.get('equipment','Spor salonu')}")
         st.markdown(st.session_state["ai_exercise"])
 
-    with tab3:
-        st.subheader("🍎 Besin Veritabanından Öneriler")
-        food_df = get_food_recommendations(calorie_target, goal)
-        if food_df is not None:
-            st.dataframe(food_df.head(10), use_container_width=True, hide_index=True)
-        else:
-            st.warning("Besin verisi yüklenemedi.")
 
-    with tab4:
+    with tab3:
         st.subheader("BMI Göstergesi")
         fig, ax = plt.subplots(figsize=(8, 1.5))
         bmi_ranges = [0, 18.5, 25, 30, 40]
@@ -140,7 +132,7 @@ if st.session_state.get("program_ready"):
         ax.set_title("BMI skalası")
         st.pyplot(fig)
 
-    with tab5:
+    with tab4:
         st.subheader("💬 AI Sağlık Asistanı")
         st.markdown("Diyet, egzersiz ve sağlık hakkındaki sorularını sorabilirsin.")
 
