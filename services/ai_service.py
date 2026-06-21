@@ -8,42 +8,52 @@ def get_ai_diet_plan(profile: dict, calorie_target: int) -> str:
     restrictions = profile.get("restrictions", "").strip()
     restrictions_text = f"Besin kısıtlamaları/alerjileri: {restrictions}" if restrictions else "Besin kısıtlaması yok."
 
-    prompt = f"""User profile:
-- Age: {profile['age']}, Gender: {profile['gender']}
-- Weight: {profile['weight']}kg, Height: {profile['height']}cm
+    prompt = f"""Sen bir diyetisyen asistanisin. Asagidaki kisiye TAMAMEN OZEL ve OZGUN bir diyet plani olustur.
+
+UYARI: Bu plani baska hic kimseye verme. Sadece bu kisinin ozelliklerine gore yaz.
+Bu kisinin BMI degeri {profile['bmi']}, kilosu {profile['weight']} kg, cinsiyeti {profile['gender']}.
+Bu degerlere gore yemek secimleri ve porsiyonlar degismeli.
+
+KISISEL BILGILER:
+- Yas: {profile['age']}
+- Cinsiyet: {profile['gender']}
+- Kilo: {profile['weight']} kg
+- Boy: {profile['height']} cm
 - BMI: {profile['bmi']} ({profile['bmi_category']})
-- Goal: {profile['goal']}
-- Daily calorie target: {calorie_target} kcal
-- Dietary restrictions: {restrictions_text}
+- Hedef: {profile['goal']}
+- Gunluk kalori hedefi: {calorie_target} kcal
+- Kisitlamalar: {restrictions_text}
 
-Create a detailed 7-day personalized meal plan in Turkish.
-Rules:
-- Each day must have 5 meals: Sabah kahvaltisi, Ara ogun, Ogle yemegi, Ara ogun, Aksam yemegi
-- Every day must be completely different, no repeated meals across the week
-- Each meal must include 2-3 specific food items with portions
-- Write estimated calories for each meal
-- Daily total must be close to {calorie_target} kcal
-- Each meal must be detailed and satisfying, not just one food item
-- Breakfast should include protein, carbs and healthy fats (e.g. eggs, cheese, vegetables, bread, olive oil)
-- Main meals should include a protein source, carbohydrate, vegetables and a side dish
-- Snacks should be more than just one fruit, combine 2-3 items (e.g. fruit + nuts + yogurt)
-- Use variety: chicken, fish, red meat, legumes, eggs across different days
-- Include traditional Turkish meals like mercimek corbasi, kuru fasulye, izgaraetler, etc.
-- Be creative and varied, do not give the same meals to every user
-- Adapt meals to the user's goal: if losing weight prefer lighter meals, if gaining weight prefer calorie-dense meals
-- Consider the user's BMI category when suggesting portion sizes
-- Mix different cuisines and cooking methods: grilled, boiled, baked, raw
-- Do not repeat the same protein source more than twice in a week
-- Strictly avoid any foods mentioned in dietary restrictions
-- Make it realistic and practical for a Turkish person
+CESITLILIK KURALLARI:
+- Protein kaynaklari cesitli olsun: tavuk, balik, kirmizi et, yumurta, baklagiller
+- Karbonhidrat cesitli olsun: bulgur, pirinc, makarna, ekmek, yulaf
+- Her gun farkli bir protein kaynagi kullan
+- Yumurtayi haftada 2-3 kez kullanabilirsin ama her gun olmasin
+- Sebze ve meyveleri cesitli sec
+- Geleneksel Turk mutfagindan yemekler ekle
 
-Format each day like:
+HEDEF KURALLARI:
+- Kilo verme hedefi: hafif, dusuk kalorili, bol sebzeli yemekler
+- Kilo alma hedefi: yuksek proteinli, kalorili, doyurucu yemekler
+- Formu koruma hedefi: dengeli, cesitli yemekler
+
+ZORUNLU KURALLAR:
+- 7 gunluk plan yaz
+- Her gun 5 ogun: Kahvalti, Ara ogun, Ogle, Ara ogun, Aksam
+- 7 gunun hicbirinde ayni yemek tekrarlanmasin
+- Her ogunde 2-3 yiyecek, gram veya adet olarak porsiyon belirt
+- Her ogun icin kalori yaz
+- SADECE Turkce yaz
+
+FORMAT:
 Pazartesi:
-- Sabah: [foods] - [calories] kcal
-- Ara ogun: [foods] - [calories] kcal
-- Ogle: [foods] - [calories] kcal
-- Ara ogun: [foods] - [calories] kcal
-- Aksam: [foods] - [calories] kcal"""
+- Kahvalti: [yiyecekler ve porsiyonlar] - [kalori] kcal
+- Ara ogun: [yiyecekler] - [kalori] kcal
+- Ogle: [yiyecekler] - [kalori] kcal
+- Ara ogun: [yiyecekler] - [kalori] kcal
+- Aksam: [yiyecekler] - [kalori] kcal
+
+(Sali, Carsamba, Persembe, Cuma, Cumartesi, Pazar da ayni formatta devam et)"""
 
     response = client.chat.completions.create(
         model=GROQ_MODEL,
